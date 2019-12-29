@@ -12,8 +12,8 @@ export {isImageTypeSupported, getDefaultImageType} from './lib/category-api/imag
 export {
   isImage,
   getImageType,
-  getImageSize,
-  getImageData
+  getImageData,
+  getImageDataAsync
 } from './lib/category-api/parsed-image-api';
 
 // Texture Loading API
@@ -25,6 +25,8 @@ export {loadImageCube} from './lib/texture-api/load-image-cube';
 // TODO - Remove in V3
 
 export {default as HTMLImageLoader} from './image-loader';
+
+export {getImageData as getImageSize} from './lib/category-api/parsed-image-api';
 
 import {getDefaultImageType} from './lib/category-api/image-type';
 

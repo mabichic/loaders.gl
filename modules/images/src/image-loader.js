@@ -1,5 +1,6 @@
 import parseImage from './lib/parsers/parse-image';
 import {getBinaryImageMetadata} from './lib/category-api/binary-image-api';
+
 /** @typedef {import('@loaders.gl/loader-utils').LoaderObject} LoaderObject */
 
 // __VERSION__ is injected by babel-plugin-version-inline
@@ -21,19 +22,20 @@ const MIME_TYPES = [
 /** @type {LoaderObject} */
 const ImageLoader = {
   id: 'image',
-  name: 'Images',
+  name: 'Image',
+  category: 'image',
   version: VERSION,
   mimeTypes: MIME_TYPES,
   extensions: EXTENSIONS,
   parse: parseImage,
-  // TODO: byteOffset, byteLength;
+  // TODO: support byteOffset, byteLength;
   test: arrayBuffer => Boolean(getBinaryImageMetadata(new DataView(arrayBuffer))),
   options: {
     image: {
       type: 'auto',
-      decode: true // if format is HTML
+      decode: true // applies only to images of type: 'image' (Image)
     }
-    // imagebitmap: {} - passes (platform dependent) parameters to ImageBitmap constructor
+    // imagebitmap: {} - if supplied, passes platform dependent parameters to `createImageBitmap`
   }
 };
 

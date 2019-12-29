@@ -1,6 +1,6 @@
 import assert from '../utils/assert';
 import {isImageTypeSupported, getDefaultImageType} from '../category-api/image-type';
-import {getImageData} from '../category-api/parsed-image-api';
+import {getImageDataAsync} from '../category-api/parsed-image-api';
 import parseToImage from './parse-to-image';
 import parseToImageBitmap from './parse-to-image-bitmap';
 import parseToNodeImage from './parse-to-node-image';
@@ -37,7 +37,12 @@ export default async function parseImage(arrayBuffer, options, context) {
 
   // Browser: if options.image.type === 'data', we can now extract data from the loaded image
   if (imageType === 'data') {
-    image = getImageData(image);
+    const data = await getImageDataAsync(image);
+    // imageBitmap has a close method to dispose of graphical resources, test if available
+    if (image.close) {
+      image.close();
+    }
+    return data;
   }
 
   return image;
@@ -53,7 +58,9 @@ function getLoadableImageType(type) {
       return getDefaultImageType();
     default:
       // Throw an error if not supported
-      isImageTypeSupported(type);
+      if (!isImageTypeSupported(type)) {
+        throw new Error(`@loaders.gl/images: image type ${type} not supported in this environment`);
+      }
       return type;
   }
 }

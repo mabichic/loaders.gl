@@ -1,3 +1,4 @@
+/* global ImageBitmap */
 import test from 'tape-promise/tape';
 import {load} from '@loaders.gl/core';
 import {ImageLoader} from '@loaders.gl/images';
@@ -9,7 +10,8 @@ import {
   isImage,
   getImageType,
   getImageSize,
-  getImageData
+  getImageData,
+  getImageDataAsync
 } from '@loaders.gl/images';
 
 const IMAGE_TYPES = ['auto', 'image', 'imagebitmap', 'data'];
@@ -88,8 +90,22 @@ test('Image Category#getImageSize', async t => {
 test('Image Category#getImageData', async t => {
   const IMAGES = await loadImages();
   for (const image of IMAGES) {
-    t.equals(typeof getImageData(image), 'object', 'returns data');
+    const imageData = getImageData(image);
+    t.equals(typeof imageData, 'object', 'returns data');
+    t.notOk(imageData.worker, 'processed on main-thread');
   }
   t.throws(() => getImageData('not an image'));
+  t.end();
+});
+
+test('Image Category#getImageDataAsync', async t => {
+  const IMAGES = await loadImages();
+  for (const image of IMAGES) {
+    const imageData = await getImageDataAsync(image);
+    t.equals(typeof imageData, 'object', 'returns data');
+    if (typeof ImageBitmap !== 'undefined' && image instanceof ImageBitmap) {
+      t.ok(imageData.worker, 'processed on worker');
+    }
+  }
   t.end();
 });
