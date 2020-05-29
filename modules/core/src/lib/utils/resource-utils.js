@@ -3,12 +3,11 @@ import {parseMIMEType, parseMIMETypeFromURL} from './mime-type-utils';
 
 const QUERY_STRING_PATTERN = /\?.*/;
 
-export function getResourceUrlAndType(resource) {
+export function getResourceUrlAndType(resource, {isURL = true} = {}) {
   // If resource is a response, it contains the information directly
   if (isResponse(resource)) {
     const contentType = parseMIMEType(resource.headers.get('content-type'));
     const urlType = parseMIMETypeFromURL(resource.url);
-
     return {
       url: stripQueryString(resource.url || ''),
       type: contentType || urlType || null
@@ -55,7 +54,6 @@ export function getResourceContentLength(resource) {
   if (ArrayBuffer.isView(resource)) {
     return resource.byteLength;
   }
-
   return -1;
 }
 
